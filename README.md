@@ -5,7 +5,7 @@ Noir JWT is a library for verifying JSON Web Tokens (JWTs) in Noir. The library 
 Available Functions:
 
 - `verify_jwt` - Verifies a fixed array JWT with a secret key and returns the boolean value.
-- `verify_jwt_var` - Verifies a vector JWT with a secret key and returns the boolean value.
+- `verify_jwt_var` - Verifies a vector JWT with a vector secret key and returns the boolean value.
 
 ## Installation
 
