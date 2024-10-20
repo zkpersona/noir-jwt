@@ -5,4 +5,5 @@ authors = ["Vedant Chainani <vedantchainani1084@gmail.com>"]
 compiler_version = ">=0.35.0"
 
 [dependencies]
-noir_hmac = { tag = "v1.0.0", git = "https://github.com/Envoy-VC/noir_hmac" }
+noir_hmac = { tag = "v1.0.1", git = "https://github.com/Envoy-VC/noir_hmac" }
+noir_base64_lib = { tag = "v1.0.0", git = "https://github.com/Envoy-VC/noir_base64_lib" }
