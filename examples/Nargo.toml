@@ -1,0 +1,3 @@
+[workspace]
+members = ["jwt_verify", "jwt_string_verify"]
+default-member = "jwt_verify"

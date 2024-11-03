@@ -1,0 +1,9 @@
+[package]
+name = "noir_jwt"
+type = "lib"
+authors = ["Vedant Chainani <vedantchainani1084@gmail.com>"]
+compiler_version = ">=0.36.0"
+
+[dependencies]
+noir_hmac = { tag = "v1.0.2", git = "https://github.com/Envoy-VC/noir_hmac" }
+noir_base64 = { tag = "v0.3.0", git = "https://github.com/noir-lang/noir_base64" }
