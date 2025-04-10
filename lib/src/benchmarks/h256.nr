@@ -1,4 +1,4 @@
-use crate::{h256::verify_jwt_h256, types::JWT};
+use crate::JWT;
 
 #[export]
 fn bench_verify_jwt_h256_small() {
@@ -12,10 +12,10 @@ fn bench_verify_jwt_h256_small() {
     let signature: BoundedVec<u8, 64> =
         BoundedVec::from_array("V76__Az9KeQNpsT7cezbve34B1Mx6OriMLto3vSCeI8".as_bytes());
 
+    let secret_key: BoundedVec<u8, 64> = BoundedVec::from_array("secret_key".as_bytes());
+
     let jwt = JWT::new(header, payload, signature);
-    let secret_key: BoundedVec<u8, 10> = BoundedVec::from_array("secret_key".as_bytes());
-    let res: bool = verify_jwt_h256(jwt, secret_key);
-    assert(res);
+    assert(jwt.verify(secret_key));
 }
 
 #[export]
@@ -28,9 +28,8 @@ fn bench_verify_jwt_h256_large() {
     );
     let signature: BoundedVec<u8, 64> =
         BoundedVec::from_array("YKYwnHfD6tZYCVnihZN72OJrE136bbx_s07tAh87Myg".as_bytes());
+    let secret_key: BoundedVec<u8, 64> = BoundedVec::from_array("secret_key".as_bytes());
 
     let jwt = JWT::new(header, payload, signature);
-    let secret_key: BoundedVec<u8, 10> = BoundedVec::from_array("secret_key".as_bytes());
-    let res: bool = verify_jwt_h256(jwt, secret_key);
-    assert(res);
+    assert(jwt.verify(secret_key));
 }
