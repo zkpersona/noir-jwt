@@ -4,3 +4,5 @@ type = "lib"
 authors = [""]
 
 [dependencies]
+noir_hmac = { tag = "main", git = "https://github.com/zkpersona/noir-hmac", directory = "lib" }
+noir_base64 = { tag = "v0.4.0", git = "https://github.com/noir-lang/noir_base64" }
