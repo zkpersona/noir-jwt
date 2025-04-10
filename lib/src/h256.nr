@@ -2,28 +2,9 @@ use noir_base64::BASE64_URL_DECODER::decode_var;
 use noir_hmac::hmac_sha256::hmac_sha256;
 
 use crate::JWT;
-use crate::types::{Header, Payload, SecretKey, Signature, SigningInput};
+use crate::types::{SecretKey, SigningInput};
 
 impl<let MaxHeaderLength: u32, let MaxPayloadLength: u32, let MaxSignatureLength: u32> JWT<u8, MaxHeaderLength, MaxPayloadLength, MaxSignatureLength> {
-    pub fn new(
-        header: Header<MaxHeaderLength>,
-        payload: Payload<MaxPayloadLength>,
-        signature: Signature<u8, MaxSignatureLength>,
-    ) -> Self {
-        Self { header, payload, signature }
-    }
-
-    pub fn get_header(self) -> Header<MaxHeaderLength> {
-        self.header
-    }
-
-    pub fn get_payload(self) -> Payload<MaxPayloadLength> {
-        self.payload
-    }
-
-    pub fn get_signature(self) -> Signature<u8, MaxSignatureLength> {
-        self.signature
-    }
 
     pub fn verify<let MaxSecretKeyLength: u32>(
         self,
