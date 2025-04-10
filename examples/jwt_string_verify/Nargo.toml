@@ -1,8 +1,0 @@
-[package]
-name = "jwt_string_verify"
-type = "bin"
-authors = ["Vedant Chainani <vedantchainani1084@gmail.com>"]
-compiler_version = ">=0.36.0"
-
-[dependencies]
-noir_jwt = { path = "../../lib" }
