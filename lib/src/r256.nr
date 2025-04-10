@@ -1,5 +1,5 @@
 use crate::JWT;
-use super::{RSAPubkey, types::SigningInput};
+use super::{helpers::build_signing_input, RSAPubkey};
 
 use bignum::{params::BigNumParams, RuntimeBigNum};
 use rsa::rsa::verify_sha256_pkcs1v15;
@@ -7,21 +7,15 @@ use std::hash::sha256::sha256_var;
 
 impl<let MaxHeaderLength: u32, let MaxPayloadLength: u32, let MaxSignatureLength: u32> JWT<Field, MaxHeaderLength, MaxPayloadLength, MaxSignatureLength> {
 
-    pub fn verify<let ModBits: u32>(
-        self,
-        pub_key: RSAPubkey<MaxSignatureLength, ModBits>,
-        exponent: u32,
-    ) -> bool {
-        let mut signing_input: SigningInput<MaxHeaderLength, MaxPayloadLength> = BoundedVec::new();
-        signing_input.extend_from_bounded_vec(self.header);
-        signing_input.push(46); // .
-        signing_input.extend_from_bounded_vec(self.payload);
+    pub fn verify(self, pub_key: RSAPubkey<MaxSignatureLength>, exponent: u32) -> bool {
+        /// SAFETY: This only does concatenation of header and payload
+        let mut signing_input = unsafe { build_signing_input(self.header, self.payload) };
 
         let data_hash = sha256_var(signing_input.storage(), signing_input.len() as u64);
-        let params: BigNumParams<MaxSignatureLength, ModBits> =
+        let params: BigNumParams<MaxSignatureLength, 2048> =
             BigNumParams::new(false, pub_key.modulus, pub_key.redc);
 
-        let signature: RuntimeBigNum<MaxSignatureLength, ModBits> =
+        let signature: RuntimeBigNum<MaxSignatureLength, 2048> =
             RuntimeBigNum::from_array(params, self.signature.storage());
 
         verify_sha256_pkcs1v15(data_hash, signature, exponent)
@@ -29,7 +23,7 @@ impl<let MaxHeaderLength: u32, let MaxPayloadLength: u32, let MaxSignatureLength
 }
 
 #[test]
-pub fn test_verify_jwt_r256_2048() {
+pub fn test_verify_jwt_rs256() {
     let header: BoundedVec<u8, 64> = BoundedVec::from_array("eyJhbGciOiJSUzI1NiJ9".as_bytes());
 
     let payload: BoundedVec<u8, 128> = BoundedVec::from_array(
@@ -102,8 +96,8 @@ pub fn test_verify_jwt_r256_2048() {
         0x136c,
     ];
 
-    let pub_key: RSAPubkey<18, 2048> = RSAPubkey { modulus, redc };
-    let jwt = JWT::new(header, payload, signature);
+    let pub_key = RSAPubkey { modulus, redc };
+    let jwt = JWT::init(header, payload, signature);
 
     let verified = jwt.verify(pub_key, 65537);
 

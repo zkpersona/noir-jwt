@@ -14,7 +14,7 @@ fn bench_verify_jwt_h256_small() {
 
     let secret_key: BoundedVec<u8, 64> = BoundedVec::from_array("secret_key".as_bytes());
 
-    let jwt = JWT::new(header, payload, signature);
+    let jwt = JWT::init(header, payload, signature);
     assert(jwt.verify(secret_key));
 }
 
@@ -30,6 +30,6 @@ fn bench_verify_jwt_h256_large() {
         BoundedVec::from_array("YKYwnHfD6tZYCVnihZN72OJrE136bbx_s07tAh87Myg".as_bytes());
     let secret_key: BoundedVec<u8, 64> = BoundedVec::from_array("secret_key".as_bytes());
 
-    let jwt = JWT::new(header, payload, signature);
+    let jwt = JWT::init(header, payload, signature);
     assert(jwt.verify(secret_key));
 }

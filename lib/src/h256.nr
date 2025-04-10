@@ -1,8 +1,9 @@
 use noir_base64::BASE64_URL_DECODER::decode_var;
 use noir_hmac::hmac_sha256::hmac_sha256;
 
+use crate::helpers::build_signing_input;
 use crate::JWT;
-use crate::types::{SecretKey, SigningInput};
+use crate::types::SecretKey;
 
 impl<let MaxHeaderLength: u32, let MaxPayloadLength: u32, let MaxSignatureLength: u32> JWT<u8, MaxHeaderLength, MaxPayloadLength, MaxSignatureLength> {
 
@@ -12,10 +13,8 @@ impl<let MaxHeaderLength: u32, let MaxPayloadLength: u32, let MaxSignatureLength
     ) -> bool {
         let decoded_signature = decode_var(self.signature);
 
-        let mut signing_input: SigningInput<MaxHeaderLength, MaxPayloadLength> = BoundedVec::new();
-        signing_input.extend_from_bounded_vec(self.header);
-        signing_input.push(46); // .
-        signing_input.extend_from_bounded_vec(self.payload);
+        /// SAFETY: This only does concatenation of header and payload
+        let mut signing_input = unsafe { build_signing_input(self.header, self.payload) };
 
         let hmac_signature = hmac_sha256(secret_key, signing_input);
 
@@ -37,6 +36,6 @@ pub fn test_verify_jwt_h256() {
 
     let secret_key: BoundedVec<u8, 64> = BoundedVec::from_array("secret_key".as_bytes());
 
-    let jwt = JWT::new(header, payload, signature);
+    let jwt = JWT::init(header, payload, signature);
     assert(jwt.verify(secret_key));
 }

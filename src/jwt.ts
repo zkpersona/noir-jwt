@@ -4,17 +4,8 @@ import { RSASignature } from './rsa';
 /**
  * Supported JWT signature algorithms.
  *
- * @property type - The type of signature algorithm
- * @property numBits - For RSA, the number of bits in the modulus (1024 or 2048)
  */
-export type JWTAlgorithm =
-  | {
-      type: 'H256';
-    }
-  | {
-      type: 'R256';
-      numBits: 1024 | 2048;
-    };
+export type JWTAlgorithm = 'H256' | 'RS256';
 
 /**
  * Class for parsing and converting JWT strings into Noir circuit inputs.
@@ -39,7 +30,7 @@ export class JWT {
    * @param alg - The algorithm to use for signature verification (defaults to H256)
    * @throws Error if the JWT string is malformed or missing components
    */
-  constructor(jwt: string, alg: JWTAlgorithm = { type: 'H256' }) {
+  constructor(jwt: string, alg: JWTAlgorithm = 'H256') {
     const [header, payload, signature] = jwt.trim().split('.');
     if (!header) throw new Error('Invalid JWT: header is missing');
     if (!payload) throw new Error('Invalid JWT: payload is missing');
@@ -60,7 +51,7 @@ export class JWT {
    * @returns InputMap containing the JWT components as Noir circuit inputs.
    * @throws Error if an unsupported algorithm is specified
    */
-  toNoirInputs({
+  toCircuitInputs({
     maxHeaderLength,
     maxPayloadLength,
     maxSignatureLength,
@@ -70,18 +61,18 @@ export class JWT {
     maxSignatureLength: number;
   }) {
     let sig: BoundedVec<Field> | BoundedVec<U8>;
-    if (this.alg.type === 'H256') {
+    if (this.alg === 'H256') {
       const arr = Array.from(Buffer.from(this.signature)).map((e) => new U8(e));
-      sig = new BoundedVec(maxSignatureLength, () => new Field(0));
+      sig = new BoundedVec(maxSignatureLength, () => new U8(0));
       sig.extendFromArray(arr);
-    } else if (this.alg.type === 'R256') {
+    } else if (this.alg === 'RS256') {
       const sigArr = RSASignature.fromString(
         this.signature,
         'base64'
-      ).toFieldArray(this.alg.numBits);
+      ).toFieldArray();
 
-      sig = new BoundedVec(sigArr.length, () => new Field(0));
-      sig.extendFromArray(sigArr);
+      sig = new BoundedVec(sigArr.len(), () => new Field(0));
+      sig.extendFromArray(sigArr.toArray());
     } else {
       throw new Error(`Unsupported algorithm: ${this.alg}`);
     }
@@ -89,13 +80,13 @@ export class JWT {
     const headerArr = Array.from(Buffer.from(this.header)).map(
       (e) => new U8(e)
     );
-    const header = new BoundedVec(maxHeaderLength, () => new Field(0));
+    const header = new BoundedVec(maxHeaderLength, () => new U8(0));
     header.extendFromArray(headerArr);
 
     const payloadArr = Array.from(Buffer.from(this.payload)).map(
       (e) => new U8(e)
     );
-    const payload = new BoundedVec(maxPayloadLength, () => new Field(0));
+    const payload = new BoundedVec(maxPayloadLength, () => new U8(0));
     payload.extendFromArray(payloadArr);
 
     const data = {
@@ -104,6 +95,6 @@ export class JWT {
       signature: sig,
     };
 
-    return toJSON(data);
+    return toJSON({ jwt: data });
   }
 }

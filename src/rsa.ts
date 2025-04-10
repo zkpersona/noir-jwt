@@ -2,7 +2,7 @@ import {
   bnToLimbStrArray,
   bnToRedcLimbStrArray,
 } from '@mach-34/noir-bignum-paramgen';
-import { Field } from '@zkpersona/noir-helpers';
+import { Field, FixedSizeArray, toJSON } from '@zkpersona/noir-helpers';
 import forge from 'node-forge';
 import { bytesToBigInt } from './helpers';
 
@@ -69,10 +69,19 @@ export class RSAPubKey {
     const redc = bnToRedcLimbStrArray(this.modulus, numBits).map(
       (e) => new Field(e)
     );
+
     return {
-      modulus,
-      redc,
+      modulus: new FixedSizeArray(modulus.length, modulus),
+      redc: new FixedSizeArray(redc.length, redc),
     };
+  }
+
+  /**
+   * Converts the RSA public key into an object for Noir circuit input.
+   */
+  toCircuitInputs(numBits?: number) {
+    // biome-ignore lint/style/useNamingConvention: safe
+    return toJSON({ pub_key: this.toFieldArray(numBits) });
   }
 }
 
@@ -107,15 +116,20 @@ export class RSASignature {
   /**
    * Converts the RSA signature into an array of field elements for Noir circuit input.
    *
-   * @param numBits - The number of bits for the RSA modulus (default: 2048)
-   *
    * @returns An array of field elements representing the signature
    */
-  toFieldArray(numBits?: 2048 | 1024) {
-    const arr = bnToLimbStrArray(bytesToBigInt(this.bytes), numBits).map(
+  toFieldArray() {
+    const arr = bnToLimbStrArray(bytesToBigInt(this.bytes), 2048).map(
       (e) => new Field(e)
     );
 
-    return arr;
+    return new FixedSizeArray(arr.length, arr);
+  }
+
+  /**
+   * Converts the RSA signature into an object for Noir circuit input.
+   */
+  toCircuitInputs() {
+    return toJSON({ signature: this.toFieldArray() });
   }
 }
