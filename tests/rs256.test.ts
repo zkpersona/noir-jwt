@@ -5,7 +5,7 @@ import { Prover } from '@zkpersona/noir-helpers';
 import type { CompiledCircuit, InputMap } from '@noir-lang/noir_js';
 import { SignJWT, importPKCS8 } from 'jose';
 import { JWT, RSAPubKey } from '../src';
-import circuit from '../target/rs256_2048.json' assert { type: 'json' };
+import circuit from '../target/rs256.json' assert { type: 'json' };
 import { generateRSAKeyPair } from './helpers';
 
 describe('JWT-RS256 2048 bits Proof Verification', () => {
@@ -34,7 +34,7 @@ describe('JWT-RS256 2048 bits Proof Verification', () => {
 
     const inputs: InputMap = {
       ...jwtInputs,
-      ...pubKey.toCircuitInputs(2048),
+      ...pubKey.toCircuitInputs(),
     };
     return inputs;
   };

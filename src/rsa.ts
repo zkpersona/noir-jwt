@@ -79,9 +79,9 @@ export class RSAPubKey {
   /**
    * Converts the RSA public key into an object for Noir circuit input.
    */
-  toCircuitInputs(numBits?: number) {
+  toCircuitInputs() {
     // biome-ignore lint/style/useNamingConvention: safe
-    return toJSON({ pub_key: this.toFieldArray(numBits) });
+    return toJSON({ pub_key: this.toFieldArray(2048) });
   }
 }
 
