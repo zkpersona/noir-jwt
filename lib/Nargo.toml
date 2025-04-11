@@ -1,7 +1,9 @@
 [package]
 name = "lib"
 type = "lib"
-authors = [""]
+authors = ["Vedant Chainani <vedant@zkpersona.xyz>"]
+description = "JWT Verification Library for Noir"
+license = "MIT"
 
 [dependencies]
 noir_hmac = { tag = "main", git = "https://github.com/zkpersona/noir-hmac", directory = "lib" }
