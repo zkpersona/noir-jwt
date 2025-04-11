@@ -1,4 +1,2 @@
-pub global MAX_HEADER_LENGTH: u32 = 64;
-pub global MAX_PAYLOAD_LENGTH: u32 = 256;
-pub global MAX_SIGNATURE_LENGTH: u32 = 43;
-pub global MAX_SECRET_LENGTH: u32 = 256;
+/// Number of limbs required to represent a 2048-bit RSA key in Noir.
+pub global KEY_LIMBS_2048: u32 = 18;

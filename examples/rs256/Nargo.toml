@@ -1,0 +1,7 @@
+[package]
+name = "rs256"
+type = "bin"
+authors = ["Vedant Chainani <vedant@zkpersona.xyz>"]
+
+[dependencies]
+noir_jwt = { path = "../../lib" }

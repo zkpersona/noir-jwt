@@ -1,57 +1,50 @@
-use crate::constants::{
-    MAX_HEADER_LENGTH, MAX_PAYLOAD_LENGTH, MAX_SIGNATURE_LENGTH, MAX_SECRET_LENGTH,
-};
+/// Type alias for JWT header component with bounded length.
+///
+/// Represents the header part of a JWT, which contains metadata about the token
+/// and the signing algorithm used. The length is bounded to prevent memory
+/// overflow attacks.
+///
+/// # Generic Parameters
+/// * `MaxHeaderLength` - Maximum allowed length of the header in bytes
+pub type Header<let MaxHeaderLength: u32> = BoundedVec<u8, MaxHeaderLength>;
 
-pub type Header = BoundedVec<u8, MAX_HEADER_LENGTH>;
-pub type Payload = BoundedVec<u8, MAX_PAYLOAD_LENGTH>;
-pub type Signature = BoundedVec<u8, MAX_SIGNATURE_LENGTH>;
+/// Type alias for JWT payload component with bounded length.
+///
+/// Represents the payload (claims) part of a JWT, which contains the actual
+/// data being transmitted. The length is bounded to prevent memory overflow
+/// attacks and ensure efficient processing within the Noir circuit.
+///
+/// # Generic Parameters
+/// * `MaxPayloadLength` - Maximum allowed length of the payload in bytes
+pub type Payload<let MaxPayloadLength: u32> = BoundedVec<u8, MaxPayloadLength>;
 
-pub type SigningInput = BoundedVec<u8, MAX_HEADER_LENGTH + 1 + MAX_PAYLOAD_LENGTH>;
+/// Type alias for JWT signature component with bounded length.
+///
+/// Represents the signature part of a JWT, which is used to verify the
+/// authenticity of the token. The type parameter `T` allows for different
+/// signature representations (e.g., `u8` for HMAC, `Field` for RSA).
+///
+/// # Generic Parameters
+/// * `T` - The type of elements in the signature (e.g., `u8` or `Field`)
+/// * `MaxSignatureLength` - Maximum allowed length of the signature
+pub type Signature<T, let MaxSignatureLength: u32> = BoundedVec<T, MaxSignatureLength>;
 
-pub type SecretKey = BoundedVec<u8, MAX_SECRET_LENGTH>;
+/// Type alias for secret key used in HMAC-based JWT verification.
+///
+/// Represents the secret key used for HMAC-SHA256 (HS256) signature verification.
+/// The length is bounded to ensure secure key sizes and prevent memory overflow.
+///
+/// # Generic Parameters
+/// * `MaxSecretKeyLength` - Maximum allowed length of the secret key in bytes
+pub type SecretKey<let MaxSecretKeyLength: u32> = BoundedVec<u8, MaxSecretKeyLength>;
 
-pub struct JWT {
-    pub header: Header,
-    pub payload: Payload,
-    pub signature: Signature,
-}
-
-pub trait JWTActions {
-    fn new(header: Header, payload: Payload, signature: Signature) -> Self;
-    fn from_vec<let M: u32>(
-        vec: BoundedVec<u8, M>,
-        header_length: u32,
-        payload_length: u32,
-        signature_length: u32,
-    ) -> JWT;
-}
-
-impl JWTActions for JWT {
-    fn new(header: Header, payload: Payload, signature: Signature) -> JWT {
-        JWT { header, payload, signature }
-    }
-    fn from_vec<let M: u32>(
-        vec: BoundedVec<u8, M>,
-        header_length: u32,
-        payload_length: u32,
-        signature_length: u32,
-    ) -> JWT {
-        let mut header = BoundedVec::new();
-        let mut payload = BoundedVec::new();
-        let mut signature = BoundedVec::new();
-        for i in 0..MAX_HEADER_LENGTH + MAX_PAYLOAD_LENGTH + MAX_SIGNATURE_LENGTH + 2 {
-            if (i >= 0 & i < header_length) {
-                header.push(vec.get(i));
-            } else if (i > header_length & i <= header_length + payload_length) {
-                payload.push(vec.get(i));
-            } else if (
-                i > header_length + payload_length + 1
-                    & i < header_length + payload_length + signature_length + 2
-            ) {
-                signature.push(vec.get(i));
-            }
-        }
-
-        JWT::new(header, payload, signature)
-    }
-}
+/// Type alias for the concatenated signing input used in JWT verification.
+///
+/// Represents the input used for signature verification, which is constructed
+/// by concatenating the header and payload with a period (.) separator.
+/// The length is calculated as: header length + 1 (for '.') + payload length.
+///
+/// # Generic Parameters
+/// * `MaxHeaderLength` - Maximum allowed length of the header
+/// * `MaxPayloadLength` - Maximum allowed length of the payload
+pub type SigningInput<let MaxHeaderLength: u32, let MaxPayloadLength: u32> = BoundedVec<u8, MaxHeaderLength + 1 + MaxPayloadLength>;

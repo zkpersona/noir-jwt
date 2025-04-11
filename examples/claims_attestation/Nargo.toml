@@ -1,0 +1,9 @@
+[package]
+name = "claims_attestation"
+type = "bin"
+authors = ["Vedant Chainani <vedant@zkpersona.xyz>"]
+
+[dependencies]
+noir_jwt = { path = "../../lib" }
+json_parser = { git = "https://github.com/noir-lang/noir_json_parser", tag = "v0.4.0" }
+base64 = { git = "https://github.com/noir-lang/noir_base64", tag = "v0.4.0" }

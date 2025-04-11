@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "lib",
+    "examples/h256",
+    "examples/rs256",
+    "examples/claims_attestation",
+]
+default-member = "lib"

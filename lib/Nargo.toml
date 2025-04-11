@@ -1,9 +1,12 @@
 [package]
-name = "noir_jwt"
+name = "lib"
 type = "lib"
-authors = ["Vedant Chainani <vedantchainani1084@gmail.com>"]
-compiler_version = ">=0.36.0"
+authors = ["Vedant Chainani <vedant@zkpersona.xyz>"]
+description = "JWT Verification Library for Noir"
+license = "MIT"
 
 [dependencies]
-noir_hmac = { tag = "v1.0.2", git = "https://github.com/Envoy-VC/noir_hmac" }
-noir_base64 = { tag = "v0.3.0", git = "https://github.com/noir-lang/noir_base64" }
+noir_hmac = { tag = "v0.1.0", git = "https://github.com/zkpersona/noir-hmac", directory = "lib" }
+noir_base64 = { tag = "v0.4.0", git = "https://github.com/noir-lang/noir_base64" }
+bignum = { git = "https://github.com/noir-lang/noir-bignum", tag = "v0.5.4" }
+rsa = { git = "https://github.com/noir-lang/noir_rsa", tag = "v0.6.0", directory = "lib" }
