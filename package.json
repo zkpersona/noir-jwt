@@ -1,6 +1,6 @@
 {
   "name": "@zkpersona/noir-jwt",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "JWT Verification and claims attestation library for Noir",
   "keywords": [
     "noir",
@@ -29,7 +29,10 @@
   },
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
-  "files": ["dist/**", "lib/**"],
+  "files": [
+    "dist/**",
+    "lib/**"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "vitest",
