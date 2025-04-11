@@ -26,7 +26,7 @@ In your _Nargo.toml_ file, add the version of this library you would like to ins
 
 ```toml
 [dependencies]
-LIBRARY = { tag = "v0.1.0", git = "https://github.com/zkpersona/noir-jwt", directory = "lib" }
+noir_jwt = { tag = "v0.1.0", git = "https://github.com/zkpersona/noir-jwt", directory = "lib" }
 ```
 
 ## Usage
