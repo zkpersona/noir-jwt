@@ -7,6 +7,30 @@ use std::hash::sha256::sha256_var;
 
 impl<let MaxHeaderLength: u32, let MaxPayloadLength: u32, let MaxSignatureLength: u32> JWT<Field, MaxHeaderLength, MaxPayloadLength, MaxSignatureLength> {
 
+    /// Verifies a JWT using RSA-SHA256 (RS256) algorithm with PKCS#1 v1.5 padding.
+    ///
+    /// This function performs the following steps:
+    /// 1. Constructs the signing input from header and payload
+    /// 2. Computes SHA-256 hash of the signing input
+    /// 3. Initializes RSA parameters with the public key
+    /// 4. Verifies the signature using PKCS#1 v1.5 padding scheme
+    ///
+    /// # Arguments
+    /// * `pub_key` - The RSA public key used for verification
+    /// * `exponent` - The RSA public exponent (typically 65537)
+    ///
+    /// # Returns
+    /// Returns `true` if the signature is valid, `false` otherwise.
+    ///
+    /// # Safety
+    /// The `build_signing_input` function is marked as unsafe because it performs
+    /// array concatenation. However, this is safe in this context as we're working
+    /// with fixed-size arrays and the lengths are checked at compile time.
+    ///
+    /// # Note
+    /// This implementation uses a 2048-bit RSA key size, which is considered secure
+    /// for current cryptographic standards. The signature verification is performed
+    /// using the PKCS#1 v1.5 padding scheme as specified in RFC 8017.
     pub fn verify(self, pub_key: RSAPubkey<MaxSignatureLength>, exponent: u32) -> bool {
         /// SAFETY: This only does concatenation of header and payload
         let mut signing_input = unsafe { build_signing_input(self.header, self.payload) };

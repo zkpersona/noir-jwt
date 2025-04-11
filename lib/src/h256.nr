@@ -7,6 +7,24 @@ use crate::types::SecretKey;
 
 impl<let MaxHeaderLength: u32, let MaxPayloadLength: u32, let MaxSignatureLength: u32> JWT<u8, MaxHeaderLength, MaxPayloadLength, MaxSignatureLength> {
 
+    /// Verifies a JWT using HMAC-SHA256 (HS256) algorithm.
+    ///
+    /// This function performs the following steps:
+    /// 1. Decodes the base64url-encoded signature
+    /// 2. Constructs the signing input from header and payload
+    /// 3. Computes HMAC-SHA256 of the signing input using the secret key
+    /// 4. Compares the computed signature with the decoded signature
+    ///
+    /// # Arguments
+    /// * `secret_key` - The secret key used for HMAC-SHA256 verification
+    ///
+    /// # Returns
+    /// Returns `true` if the signature is valid, `false` otherwise.
+    ///
+    /// # Safety
+    /// The `build_signing_input` function is marked as unsafe because it performs
+    /// array concatenation. However, this is safe in this context as we're working
+    /// with fixed-size arrays and the lengths are checked at compile time.
     pub fn verify<let MaxSecretKeyLength: u32>(
         self,
         secret_key: SecretKey<MaxSecretKeyLength>,
