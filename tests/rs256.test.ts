@@ -1,13 +1,11 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { Prover, generateToml } from '@zkpersona/noir-helpers';
+import { Prover } from '@zkpersona/noir-helpers';
 
-import circuit from '../target/rs256_2048.json' assert { type: 'json' };
-
-import path from 'node:path';
 import type { CompiledCircuit, InputMap } from '@noir-lang/noir_js';
 import { SignJWT, importPKCS8 } from 'jose';
 import { JWT, RSAPubKey } from '../src';
+import circuit from '../target/rs256_2048.json' assert { type: 'json' };
 import { generateRSAKeyPair } from './helpers';
 
 describe('JWT-RS256 2048 bits Proof Verification', () => {
@@ -43,7 +41,6 @@ describe('JWT-RS256 2048 bits Proof Verification', () => {
 
   it('should prove using honk backend', async () => {
     const inputs = await generateInputs();
-    generateToml(inputs, path.join(__dirname, 'rs256.toml'));
     const proof = await prover.fullProve(inputs, { type: 'honk' });
     const isVerified = await prover.verify(proof, { type: 'honk' });
     expect(isVerified).toBe(true);
